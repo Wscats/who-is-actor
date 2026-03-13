@@ -1,0 +1,59 @@
+name: who-is-actor
+version: 1.0.0
+description: >
+  A zero-dependency Git repository developer profiling skill. It uses only
+  native git commands (no Python scripts, no pip installs) to analyze commit
+  history, then leverages AI to generate a sharp, data-driven developer
+  portrait covering commit habits, work habits, development efficiency,
+  code style, code quality, and a "slacking index" for each contributor.
+author: reky
+license: MIT
+acceptLicenseTerms: true
+tags:
+  - code-analysis
+  - git
+  - developer-profiling
+  - zero-dependency
+  - commit-patterns
+  - slacking-index
+
+runtime: ai
+entry: SKILL.md
+
+parameters:
+  - name: repo_path
+    type: string
+    description: >
+      Absolute path to the Git repository to analyze.
+    required: true
+
+  - name: authors
+    type: list
+    description: >
+      List of author names or emails to analyze. If empty, analyze all contributors.
+    default: []
+
+  - name: since
+    type: string
+    description: >
+      Start date for analysis (ISO format, e.g. '2024-01-01').
+    default: ""
+
+  - name: until
+    type: string
+    description: >
+      End date for analysis (ISO format, e.g. '2024-12-31').
+    default: ""
+
+  - name: branch
+    type: string
+    description: >
+      Branch to analyze. Defaults to the current active branch.
+    default: ""
+
+outputs:
+  - name: report
+    type: string
+    description: >
+      The generated Markdown analysis report containing per-developer metrics,
+      cross-comparison table, ratings, and personalized commentary.
