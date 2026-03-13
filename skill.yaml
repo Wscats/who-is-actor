@@ -1,5 +1,5 @@
 name: who-is-actor
-version: 1.0.2
+version: 1.0.3
 description: >
   A zero-dependency Git repository developer profiling skill. It uses only
   native git READ-ONLY commands (no Python scripts, no pip installs) to
@@ -34,7 +34,7 @@ parameters:
   - name: authors
     type: list
     description: >
-      List of author names or emails to analyze. If empty, analyze all contributors.
+      List of author display names to analyze (email addresses are NOT accepted — use the author's Git display name instead). If empty, analyze all contributors.
     default: []
 
   - name: since
