@@ -14,6 +14,8 @@ description: >
 
 # Who Is Actor — Git Repository Developer Profiling Skill
 
+> 🔗 **Project Repository:** [https://github.com/nicepkg/who-is-actor](https://github.com/nicepkg/who-is-actor)
+
 Zero dependencies, zero scripts. Collects data purely through native `git` commands, interpreted by AI, to generate a serious, direct, and unsparing report card for every developer.
 
 ---
