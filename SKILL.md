@@ -5,18 +5,21 @@ description: >
   This skill should be used when the user wants to analyze a Git repository
   and profile each developer's commit habits, work habits, development
   efficiency, code style, code quality, and engagement index — all without
-  installing any dependencies or running any scripts. It relies purely on
-  native git CLI commands and AI-driven interpretation. Trigger phrases
-  include "analyze repository" "profile developers" "commit habits"
-  "developer report card" "代码分析" "研发效率" "开发者画像"
-  "提交习惯" "工作习惯" "参与度".
+  installing any extra packages or running any custom scripts. It relies
+  purely on native git CLI commands (and standard Unix text-processing
+  utilities already present on the host) and AI-driven interpretation.
+  Trigger phrases include "analyze repository" "profile developers"
+  "commit habits" "developer report card" "代码分析" "研发效率"
+  "开发者画像" "提交习惯" "工作习惯" "参与度".
 ---
 
 # Who Is Actor — Git Repository Developer Profiling Skill
 
-> 🔗 **Project Repository:** [https://github.com/nicepkg/who-is-actor](https://github.com/nicepkg/who-is-actor)
+> 🔗 **Project Repository:** [https://github.com/wscats/who-is-actor](https://github.com/wscats/who-is-actor)
 
-Zero dependencies, zero scripts. Collects data purely through native `git` commands, interpreted by AI, to generate a serious, direct, and unsparing report card for every developer.
+Zero *install* dependencies, zero scripts. Collects data purely through native `git` commands and standard Unix text utilities (`cut`, `sort`, `awk`, `grep`, etc. — already present on most systems), interpreted by AI, to generate a serious, direct, and unsparing report card for every developer.
+
+> **"Zero dependency" clarification:** This skill installs nothing — no pip packages, no npm modules, no custom scripts. However, it **does require** the following standard system binaries to be available on the host: `git`, `cut`, `sort`, `uniq`, `awk`, `grep`, `sed`, `wc`, `head`. These are pre-installed on virtually all Unix-like systems (macOS, Linux). On Windows, use Git Bash or WSL.
 
 ---
 
@@ -114,6 +117,24 @@ You don't need to memorize any commands or parameters — simply describe what y
 ## Security Specification
 
 > **All shell command parameters MUST be strictly validated before execution to prevent command injection attacks.**
+
+### Dry-Run Mode (Recommended for First Use)
+
+Before executing any commands, the agent SHOULD offer a **dry-run mode** that:
+
+1. Collects and validates all parameters per the rules below
+2. Constructs the full list of shell commands that *would* be executed
+3. **Prints every command to the user for review WITHOUT executing any of them**
+4. Waits for explicit user approval before proceeding to actual execution
+
+To trigger dry-run mode, the user can say:
+```
+💬 "Show me the commands first before running them"
+💬 "Do a dry run on /path/to/repo"
+💬 "先列出要执行的命令，不要运行"
+```
+
+> This allows the user to verify that every command strictly matches the whitelist below.
 
 ### Command Whitelist (Only These Commands Are Allowed)
 
@@ -415,7 +436,10 @@ For each developer, output:
 ## Important Notes
 
 - All data collection uses only native `git` commands — **no pip packages, no Python/Node scripts installed or executed**
+- **Required system binaries:** `git`, `cut`, `sort`, `uniq`, `awk`, `grep`, `sed`, `wc`, `head` — these must be available on the host (pre-installed on most Unix-like systems)
 - **All user inputs MUST be validated per the "Security Specification" rules before execution** to prevent command injection attacks
+- **Dry-run mode is recommended for first use** — review all commands before allowing execution
+- **Sensitive data warning:** Commit messages and filenames read during analysis may contain secrets, credentials, or proprietary information. Only run this skill on repositories you have explicit permission to analyze
 - **Developer emails are NOT collected** to protect personal privacy
 - For large repositories, consider limiting the date range to control command execution time
 - Be aware that the same person may have different name variants (can be unified via `.mailmap`)

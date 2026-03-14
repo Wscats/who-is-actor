@@ -4,7 +4,8 @@ license: MIT
 description: >
   当用户需要分析 Git 仓库并为每个开发者生成提交习惯、工作习惯、研发效率、
   代码风格、代码质量和参与度指数画像时，应触发本技能。完全无需安装任何
-  依赖或运行任何脚本，纯粹依赖原生 git CLI 命令和 AI 驱动的解读。
+  额外包或运行任何自定义脚本，纯粹依赖原生 git CLI 命令和主机上已有的
+  标准 Unix 文本处理工具，由 AI 驱动解读。
   触发词包括 "analyze repository" "profile developers" "commit habits"
   "developer report card" "代码分析" "研发效率" "开发者画像"
   "提交习惯" "工作习惯" "参与度"。
@@ -12,9 +13,11 @@ description: >
 
 # Who Is Actor — Git 仓库开发者画像技能
 
-> 🔗 **项目地址：** [https://github.com/nicepkg/who-is-actor](https://github.com/nicepkg/who-is-actor)
+> 🔗 **项目地址：** [https://github.com/wscats/who-is-actor](https://github.com/wscats/who-is-actor)
 
-零依赖，零脚本。纯粹通过原生 `git` 命令采集数据，由 AI 解读分析，为每位开发者生成严肃、直接、毫不留情的成绩单。
+零*安装*依赖，零脚本。纯粹通过原生 `git` 命令和标准 Unix 文本工具（`cut`、`sort`、`awk`、`grep` 等 — 大多数系统已预装）采集数据，由 AI 解读分析，为每位开发者生成严肃、直接、毫不留情的成绩单。
+
+> **"零依赖"说明：** 本技能不安装任何东西 — 没有 pip 包、没有 npm 模块、没有自定义脚本。但它**确实需要**以下标准系统工具已在主机上可用：`git`、`cut`、`sort`、`uniq`、`awk`、`grep`、`sed`、`wc`、`head`。这些在几乎所有类 Unix 系统（macOS、Linux）上都已预装。Windows 用户请使用 Git Bash 或 WSL。
 
 ---
 
@@ -112,6 +115,24 @@ description: >
 ## 安全规范
 
 > **所有 shell 命令参数在执行前必须经过严格校验，以防止命令注入攻击。**
+
+### 预览模式 / Dry-Run（推荐首次使用）
+
+在执行任何命令之前，代理**应当**提供 **预览模式（dry-run）**：
+
+1. 收集并校验所有参数
+2. 构建将要执行的完整命令列表
+3. **将所有命令展示给用户审查，不实际执行任何命令**
+4. 等待用户明确批准后再实际执行
+
+触发预览模式的说法：
+```
+💬 "先列出要执行的命令，不要运行"
+💬 "做一次 dry run"
+💬 "Show me the commands first before running them"
+```
+
+> 这使用户可以验证每条命令是否严格匹配下方的白名单。
 
 ### 命令白名单（仅允许以下命令）
 
@@ -413,7 +434,10 @@ git -C <repo_path> log --author="<author>" --pretty=format:"%ad" --date=short | 
 ## 重要注意事项
 
 - 所有数据采集仅使用原生 `git` 命令 — **不安装或执行任何 pip 包、Python/Node 脚本**
+- **需要的系统工具：** `git`、`cut`、`sort`、`uniq`、`awk`、`grep`、`sed`、`wc`、`head` — 必须在主机上可用（大多数类 Unix 系统已预装）
 - **所有用户输入在执行前必须按照"安全规范"规则进行校验**，以防止命令注入攻击
+- **推荐首次使用时开启预览模式（dry-run）** — 在允许执行前审查所有命令
+- **敏感数据警告：** 分析过程中读取的提交消息和文件名可能包含密钥、凭据或专有信息。仅在你有明确权限分析的仓库上运行本技能
 - **不收集开发者邮箱**以保护个人隐私
 - 对于大型仓库，建议限制日期范围以控制命令执行时间
 - 注意同一个人可能有不同的名称变体（可通过 `.mailmap` 统一）
