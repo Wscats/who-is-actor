@@ -284,3 +284,6 @@ A：当然可以。自知者明。
 > **[who-is-actor](https://github.com/Wscats/who-is-actor)**：让每一行代码都有名有姓，让每一个贡献都被看见。  
 > 零依赖 · 零脚本 · 只用原生 git · 不需要任何理由就能开始分析
 > 免责声明：本工具纯属技术分析，如有雷同，纯属你自己写的代码太有特色。
+## Download History
+
+[![Download History](https://skill-history.com/chart/wscats/who-is-actor.svg)](https://skill-history.com/wscats/who-is-actor)
