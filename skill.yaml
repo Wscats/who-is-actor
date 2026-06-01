@@ -1,37 +1,58 @@
 name: who-is-actor
-version: 1.0.9
+version: 1.0.12
 description: >
-  A zero-*install*-dependency Git repository developer profiling skill.
+  A zero-*install*-dependency Git repository COLLABORATION-PATTERN analysis
+  skill. It produces an aggregate, repository-level report describing commit
+  cadence, churn, rework signals, conventional-commit compliance, and
+  bus-factor risk — not a personnel-evaluation tool.
+
+  Activation requires an explicit, opt-in user request that names a target
+  repository path. Vague conversational mentions of "code quality", "team
+  efficiency", "work habits", "engagement", or their Chinese equivalents
+  ("代码分析", "研发效率", "参与度") are NOT sufficient to trigger this
+  skill; the agent must first confirm the repository path, the user's
+  authority to analyze it, and (recommended) opt into Dry-Run preview
+  before any git command runs.
+
+  HR / personnel-decision use is OUT OF SCOPE and the agent MUST refuse:
+  the report, including the Visible-Activity Index (formerly "Engagement
+  Index") and any individual breakdown, must NOT be used for performance
+  reviews, hiring/firing, layoffs, compensation, ranking, or any other
+  personnel-style judgment of individuals.
+
   "Zero dependency" means no Python/Node packages, no pip/npm installs, and
   no custom scripts — however the skill DOES require standard system
   binaries already present on most Unix-like hosts (see required_binaries
   below for the full list: git, cut, sort, uniq, awk, grep, sed, wc, head).
-  It uses only native git READ-ONLY commands to analyze commit history, then
-  leverages AI to generate a data-driven developer portrait covering commit
-  habits, work habits, development efficiency, code style, code quality,
-  and an engagement index.
-  Security: all user inputs validated against strict allowlists; only
-  whitelisted git read-only subcommands are permitted; no write/network
-  operations; no developer emails collected. A dry-run mode is available
-  to preview all commands before execution. Commit messages are processed
-  for statistical analysis only (length, keyword matching) — full message
-  text is NOT forwarded to the AI model; only aggregated metrics are sent.
-  The engagement index is explicitly scoped as a collaboration reference
-  only, not for HR decisions.
-  Privacy note: commit messages and filenames are read locally during data
-  collection and may contain sensitive information — the skill enforces
-  automatic redaction of common secret patterns before any data leaves the
-  local environment. Run only on repositories you have permission to analyze.
+  It uses only native git READ-ONLY commands listed in the Command
+  Whitelist of SKILL.md.
+
+  Security: all user inputs are validated against strict allowlists; only
+  whitelisted git read-only subcommands are permitted (including
+  `rev-parse --is-inside-work-tree`, `rev-parse --show-toplevel`,
+  `shortlog -sn --all`, `log ...`, and `diff --stat ...`); no write/network
+  operations; no developer emails collected. A Dry-Run mode previews all
+  commands before execution.
+
+  Privacy (binding): commit messages and full file paths are LOCAL-ONLY
+  data. Raw commit message text and full file paths MUST NOT be forwarded
+  to the AI model — only aggregated metrics (counts, averages, ratios,
+  extension histograms) are eligible for model-bound prompts. Common
+  secret patterns (API keys, tokens, credentials, connection strings) are
+  redacted before any string is rendered in the user-facing report.
+  Run only on repositories you have permission to analyze; in team contexts,
+  inform analyzed contributors in advance.
 author: reky
 license: MIT
 acceptLicenseTerms: true
 tags:
   - code-analysis
   - git
-  - developer-profiling
+  - repository-collaboration-patterns
   - zero-dependency
   - commit-patterns
-  - engagement-index
+  - bus-factor
+  - not-for-hr
 
 dependencies:
   - git

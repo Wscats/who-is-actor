@@ -2,30 +2,82 @@
 name: who-is-actor
 license: MIT
 description: >
-  This skill should be used when the user wants to analyze a Git repository
-  and profile each developer's commit habits, work habits, development
-  efficiency, code style, code quality, and engagement index — all without
-  installing any extra packages or running any custom scripts. It relies
-  purely on native git CLI commands (and standard Unix text-processing
-  utilities already present on the host) and AI-driven interpretation.
-  Trigger phrases include "analyze repository" "profile developers"
-  "commit habits" "developer report card" "代码分析" "研发效率"
-  "开发者画像" "提交习惯" "工作习惯" "参与度".
+  This skill should be used ONLY when the user EXPLICITLY and UNAMBIGUOUSLY
+  requests a Git repository commit-history analysis that produces aggregate
+  collaboration-pattern metrics (commit cadence, churn, rework signals,
+  conventional-commit compliance, bus-factor risk).
+
+  The skill is scoped to repository-level technical analysis. It is NOT a
+  performance-management, HR, ranking, or personnel-evaluation tool, and
+  agents MUST refuse to use its output for those purposes. Any developer
+  display names appearing in output exist solely to attribute Git commit
+  records, not to render judgments about individuals.
+
+  Activation requires an explicit, opt-in user request that BOTH (a)
+  states a clear analyze-this-Git-repository intent AND (b) supplies a
+  concrete repository path (or unambiguous repo reference). Generic
+  conversational mentions of "analyze repository", "profile developers",
+  "commit habits", "developer report card", "code quality", "team
+  efficiency", "work habits", "engagement", "代码分析", "研发效率",
+  "开发者画像", "提交习惯", "工作习惯", or "参与度" WITHOUT a
+  repository path or explicit "analyze this Git repository" framing
+  are NOT sufficient to activate this skill. In that situation the agent
+  MUST first (1) confirm the user actually wants to run repository
+  profiling, (2) request a concrete repository path, (3) confirm the
+  user has authority to analyze that repository, (4) remind the user
+  that other contributors' Git metadata will be processed, and (5)
+  recommend Dry-Run preview — only after these are resolved may any
+  git command be executed.
+
+  Activation phrases (must include an explicit analyze-this-repo intent
+  AND a repository path or unambiguous repo reference): "analyze the git
+  repository at <path>", "run who-is-actor on <path>", "profile developers
+  in this repo at <path>", "generate a developer report card for the repo
+  at <path>", "分析仓库 <path>", "对 <path> 这个 git 仓库做开发者画像".
+
+  Privacy & data-handling: relies purely on native git read-only CLI
+  commands and standard Unix text-processing utilities. Developer emails
+  are never collected. Commit message text and full file paths are
+  processed strictly locally and reduced to numeric aggregates BEFORE
+  any data leaves the local environment; only aggregated metrics
+  (counts, averages, ratios, extension-level statistics) are forwarded
+  to the AI model. The collection commands themselves emit raw subjects
+  and paths — these MUST be treated as local-only intermediate values
+  and never placed into AI prompts, tool arguments, or other off-host
+  contexts. See "Sensitive Data Filtering Rules" for mandatory
+  enforcement details.
 ---
 
 # Who Is Actor — Git Repository Developer Profiling Skill
 
 > 🔗 **Project Repository:** [https://github.com/wscats/who-is-actor](https://github.com/wscats/who-is-actor)
 
-Zero *install* dependencies, zero scripts. Collects data purely through native `git` commands and standard Unix text utilities (`cut`, `sort`, `awk`, `grep`, etc. — already present on most systems), interpreted by AI, to generate a serious, direct, and unsparing report card for every developer.
+Zero *install* dependencies, zero scripts. Collects data purely through native read-only `git` commands and standard Unix text utilities (`cut`, `sort`, `awk`, `grep`, etc. — already present on most systems). The AI is responsible only for interpreting **already-aggregated, locally-redacted statistical metrics** to generate a collaboration-pattern report.
+
+> ⚠️ **READ THIS BEFORE USING — Privacy, Consent & Scope Notice**
+>
+> 1. **Other people's data may be involved.** A Git repository typically contains commit metadata (display names, timestamps, commit message subjects, file paths) authored by people other than the user invoking this skill. Before running, the user MUST confirm they have authority to analyze the repository and that doing so does not violate workplace, contractual, or local-law obligations. The agent SHOULD remind the user to inform analyzed contributors when used in a team context.
+> 2. **Not for HR / personnel decisions.** The output, including the engagement index and any individual scoring, MUST NOT be used as the basis for performance reviews, hiring/firing decisions, compensation, layoffs, ranking, or any personnel-style judgment of individuals. The agent MUST refuse such requests and respond only with non-personalized, aggregate observations.
+> 3. **Sensitive content may exist in commit metadata.** Commit messages and filenames can contain ticket IDs, incident references, secrets, customer names, URLs, or other confidential information. This skill mandates that such raw text remain **local-only** and that only aggregate, redacted metrics ever reach the AI model. See "Sensitive Data Filtering Rules" for binding enforcement.
+> 4. **Read-only, scoped, no network.** The skill executes only the read-only git subcommands enumerated in the Command Whitelist, against the single user-supplied repository path. No writes, no network, no traversal outside the repo root.
 
 > **"Zero dependency" clarification:** This skill installs nothing — no pip packages, no npm modules, no custom scripts. However, it **does require** the following standard system binaries to be available on the host: `git`, `cut`, `sort`, `uniq`, `awk`, `grep`, `sed`, `wc`, `head`. These are pre-installed on virtually all Unix-like systems (macOS, Linux). On Windows, use Git Bash or WSL.
 
 ---
 
-## 💬 Natural Language (Recommended)
+## 💬 Natural Language Examples (For Reference Only — A Repository Path Is ALWAYS Required)
 
-You don't need to memorize any commands or parameters — simply describe what you need in any language:
+> ⚠️ **Hard activation constraint (binding on the agent):** The phrasings below are reference templates for expressing intent. The agent **MUST NOT** start collection merely because the user mentioned topics like "analyze repository", "profile developers", "commit habits", "developer report card", "code quality", "engagement", "研发效率", or "开发者画像". Collection may begin **only** after ALL of the following are satisfied:
+>
+> 1. The user has explicitly stated an intent to analyze a specific Git repository;
+> 2. The user has supplied a concrete repository path (absolute) or an unambiguous repo reference;
+> 3. The user has confirmed they have authority to analyze that repository, and (in team contexts) has informed or will inform the analyzed contributors;
+> 4. The user has acknowledged the privacy notice and that the report MUST NOT be used for personnel decisions;
+> 5. Dry-Run preview is recommended before actual execution.
+>
+> If the user uses any of the phrasings below **without supplying a repository path**, the agent MUST first ask for the repository path and authority confirmation, and only then proceed.
+
+You don't need to memorize any commands or parameters — simply describe what you need in any language (please supply an absolute repository path along with the request):
 
 ### English
 
@@ -143,9 +195,12 @@ This skill **only permits the following predefined read-only git subcommands**. 
 | Allowed Command | Purpose | Modifies Repo? |
 |----------------|---------|----------------|
 | `git -C <path> rev-parse --is-inside-work-tree` | Verify the path is a valid Git repository | ❌ Read-only |
+| `git -C <path> rev-parse --show-toplevel` | Resolve the repository root when the user-supplied path is a sub-directory | ❌ Read-only |
 | `git -C <path> shortlog -sn --all` | Get contributor list and commit counts | ❌ Read-only |
-| `git -C <path> log ...` | Get commit history details | ❌ Read-only |
+| `git -C <path> log ...` | Get commit history details (read-only flags only) | ❌ Read-only |
 | `git -C <path> diff --stat ...` | Get change statistics | ❌ Read-only |
+
+> Any git invocation that is not represented by one of the rows above MUST be rejected, even if it appears read-only. Adding a new command to the whitelist is a deliberate change to the skill's safety contract and requires updating both this table and the dry-run verification checklist.
 
 **Strictly Prohibited Command Types:**
 - ❌ Any write operations: `git push`, `git commit`, `git merge`, `git rebase`, `git reset`, `git checkout`, `git branch -d`
@@ -185,42 +240,56 @@ This skill **only permits the following predefined read-only git subcommands**. 
 - **Developer email addresses are NOT collected.** All git commands use only `%an` (author name) to identify developers, never `%ae` (author email).
 - **`git shortlog` uses `-sn` instead of `-sne`** to avoid leaking email addresses.
 - **The `authors` parameter only accepts display names, NOT email addresses.** Input validation rejects values containing `@`.
-- Note: The `git --author` parameter matches against both name and email fields. Since this skill prohibits email-format values, `--author` will only match via the name portion and will not utilize the email field.
-- The final report MUST NOT contain any email addresses.
+- **Note on `git --author` semantics (precise):** Git internally matches the supplied value against both author-name and author-email fields. This skill does NOT disable that matching at the Git level. Instead, it enforces an *input-side* guarantee: the `authors` parameter is rejected if it contains `@` and must conform to `^[a-zA-Z0-9 _.-]+$`. In practice this means user-supplied values cannot be email-shaped, so they will only meaningfully match the name field; however, this is a guarantee about *what we accept as input*, not a Git-level toggle that disables email matching. The agent MUST NOT describe email matching as "disabled".
+- **Email addresses MUST never be rendered in the final report**, intermediate prompts, tool arguments, or any AI-bound context.
+- **Commit subjects (`%s`) and full file paths emitted by `--name-only` are local-only data.** Some whitelisted git commands touch this raw text — for example `git log ... --name-only` (which emits full paths) and pipelines that immediately consume `%s` in the same pipe via local tools such as `awk '{print length}'` (used for message-length and keyword statistics). The agent MUST collapse them into numeric aggregates locally and discard the raw text immediately; raw subjects and full paths MUST NOT enter any AI prompt or tool argument. The agent MUST NOT construct any command that emits `%s` together with per-commit structured fields (hash, numstat, file names, etc.) in a single output, to avoid raw subjects being captured alongside structured data. The opt-in exceptions in "Sensitive Data Filtering Rules" remain the only way to surface (already-redacted, truncated) commit subjects in the user-facing report.
 
 ### Sensitive Data Filtering Rules (Mandatory)
 
-Before sending **any** data to the AI model for analysis, the agent MUST apply the following filtering:
+> **Local-Only vs. Model-Bound data — definitions:**
+>
+> - **Local-only data** is the raw output of whitelisted git commands, including commit subjects (`%s`) and file paths produced by `--name-only`. It is read into the agent's local execution environment **for the sole purpose of computing aggregate metrics**, and MUST be discarded immediately afterward.
+> - **Model-bound data** is the only category of data permitted in any prompt sent to the AI model. It consists exclusively of numeric counts, averages, ratios, percentages, file-extension histograms, hour/weekday histograms, and bucketed enumerations (e.g., `bug_fix_commits=12`).
+>
+> Raw commit message text, full commit subjects, full file paths, branch names containing free-form text, and any unredacted strings derived from commit history are **strictly local-only**. The agent MUST NOT place such strings in any AI prompt, system message, tool argument, or other off-host context.
 
-1. **Commit messages are processed locally for statistics only:**
-   - The agent collects commit message **lengths** (character counts) and **keyword matches** (e.g., `fix`, `feat`, `revert`) locally via shell commands.
-   - **Full commit message text MUST NOT be forwarded verbatim to the AI model.** Instead, send only aggregated metrics (average length, keyword counts, conventional commit compliance rate).
-   - If the user explicitly requests to see specific commit messages, the agent MUST:
-     1. First apply all redaction patterns listed below
-     2. Truncate each message to a maximum of 120 characters
-     3. Display redacted messages **only in the final user-facing report**, never in intermediate AI prompts
-     4. Warn the user that commit messages may contain sensitive information
+Before sending **any** data to the AI model for analysis, the agent MUST apply the following filtering pipeline. Each step is mandatory and non-skippable:
 
-2. **Automatic redaction of secret patterns:**
-   Before any text (commit messages, filenames, branch names) is included in the AI prompt, the agent MUST scan for and redact the following patterns:
+1. **Commit messages — local-only processing:**
+   - The agent runs the whitelisted `git log` command(s) that emit `%s` and pipes the output through local Unix utilities (`awk '{print length}'`, `grep -cE`, `wc -l`, etc.) to compute, for example, average length, keyword counts (`fix`, `feat`, `revert`), and conventional-commit compliance rate.
+   - The intermediate raw text MUST NOT be retained in any variable, conversation buffer, or prompt that is sent to the AI model. Only the resulting numeric aggregates are forwarded.
+   - **Default behavior:** the AI model receives no commit message text, full or partial.
+   - **Opt-in exception:** if and only if the user explicitly requests to see specific commit messages, the agent MUST, in this order:
+     1. Apply every redaction pattern in step 2 below to each candidate message,
+     2. Truncate each redacted message to a maximum of 120 characters,
+     3. Render the redacted, truncated messages **only in the final user-facing report**, never inside an intermediate AI prompt or tool call,
+     4. Warn the user that commit messages may still contain sensitive context that automated patterns cannot fully detect.
+
+2. **Automatic redaction of secret patterns (applied before any string crosses the local-only boundary, e.g. before display in the user-facing report):**
    - API keys / tokens: strings matching `(?i)(api[_-]?key|token|secret|password|credential|auth)[=:]\s*\S+`
    - AWS keys: `AKIA[0-9A-Z]{16}`
    - Private keys: `-----BEGIN .* PRIVATE KEY-----`
    - Connection strings: `(?i)(mysql|postgres|mongodb|redis)://\S+`
    - Generic secrets: any string longer than 20 characters containing only alphanumeric characters that appears after `=` or `:` in a key-value pattern
-   - Replace matched content with `[REDACTED]`
+   - Replace matched content with `[REDACTED]`.
 
-3. **Filename filtering:**
-   - Filenames are collected only to determine **file extensions** for language/type statistics.
-   - Full file paths SHOULD NOT be sent to the AI model unless the user explicitly requests file-level analysis.
-   - If full paths are sent, redact any path components that match common secret file patterns: `.env`, `.credentials`, `*secret*`, `*password*`, `*token*`.
+3. **Filename filtering — extension-only by default:**
+   - The whitelisted `git log ... --name-only` invocation is permitted **only when its output is immediately reduced locally**, e.g. via `grep -oE '\.[^./]+$' | sort | uniq -c`, so that the agent retains only an extension histogram. The full file paths produced by `--name-only` are local-only data and MUST NOT be sent to the AI model.
+   - For rework detection (which conceptually requires per-file grouping), the agent MUST hash or anonymize each path locally (e.g. compute a stable opaque ID such as `file_<sha1[:8]>`) before any per-file structure is forwarded; only the rework counts and the opaque IDs may be sent.
+   - **Opt-in exception:** if the user explicitly requests file-level analysis, the agent MUST, before sending any path:
+     1. Drop any path component matching `.env`, `.credentials`, `*secret*`, `*password*`, `*token*`, or `*.pem` / `*.key`,
+     2. Apply the regex redactions from step 2 above to the remaining path,
+     3. Warn the user that file paths can reveal internal project structure and customer information.
+
+4. **Author display names:**
+   - Author names are forwarded to the AI model only as opaque attribution labels for aggregate metrics. The agent MUST NOT ask the model to infer personality, performance, or worth from the name itself, and MUST NOT couple author names with raw commit subjects in any prompt.
 
 ### Repository Path Scope Rules
 
 - The agent MUST only access the specific repository path provided by the user.
 - The agent MUST NOT traverse parent directories (`..`) or access files outside the repository root.
-- The agent MUST NOT list or read arbitrary files from the filesystem — only `git` commands targeting the validated repository are permitted.
-- If the user provides a path to a subdirectory within a repository, the agent should use the repository root (as determined by `git -C <path> rev-parse --show-toplevel`) and inform the user.
+- The agent MUST NOT list or read arbitrary files from the filesystem — only the whitelisted `git` commands targeting the validated repository are permitted.
+- If the user provides a path to a subdirectory within a repository, the agent MUST resolve the repository root using the whitelisted command `git -C <path> rev-parse --show-toplevel`, inform the user of the resolved root, and obtain confirmation before proceeding.
 
 ### Enforcement Verification Protocol
 
@@ -256,10 +325,17 @@ Because this is an instruction-only skill (no executable code), safety guarantee
 
 ## Use Cases
 
-- When users need to analyze each developer's real behavioral profile in a Git repository
-- When users want to compare team members' commit habits, work rhythms, and code quality
-- When users want to understand the team's engagement distribution
-- When users need honest evaluations of each developer's strengths and weaknesses with improvement suggestions
+- When users need an aggregate, repository-level view of commit cadence, churn, and rework signals to surface collaboration-process improvement areas
+- When users want to compare team-wide patterns (not individuals) such as commit-message conventionality, weekend/late-night ratios, and bus-factor risk
+- When users want to understand the visible-engagement distribution across the repository as a starting point for conversation, **not** as a verdict on individuals
+- When users need a structured, data-driven artifact to facilitate retrospective discussions about workflow
+
+### Out-of-Scope Use Cases (the agent MUST refuse)
+
+- Performance reviews, calibration, ranking, hiring, firing, layoffs, compensation, or any HR action
+- Producing rankings or judgments of individuals' worth, intelligence, or commitment
+- Surveillance of specific employees without their knowledge or consent
+- Analyzing repositories the user has not confirmed they have authority to inspect
 
 ## Core Principles
 
@@ -288,6 +364,8 @@ Execute the following git commands in sequence to collect raw data. **All comman
 
 > In the examples below, `<repo_path>`, `<author>`, etc. are placeholders for validated safe values from Step 1.
 
+> 🔐 **Local-only boundary reminder.** Every command in this section emits raw text (commit subjects, file paths, etc.) that is classified as **local-only** under the Sensitive Data Filtering Rules. The pipes shown below (`| awk '{ print length }'`, `| grep -oE '\.[^./]+$'`, `| wc -l`, etc.) are mandatory: their job is to collapse raw text into aggregate numeric output **before** anything is forwarded to the AI model. The agent MUST NOT capture the raw upstream text into any model-bound variable, prompt, or tool argument. If a step's natural output would still contain raw text (e.g., the rework-detection log below), the agent MUST hash, bucket, or otherwise anonymize it locally before any further processing.
+
 #### 2.1 Contributor Overview
 
 ```bash
@@ -300,8 +378,15 @@ git -C <repo_path> shortlog -sn --all
 For each author to be analyzed, execute the following commands (append `--since`, `--until`, `<branch>` parameters if a date range or branch was specified):
 
 ```bash
-# Detailed commit log: hash, author name, date, message, file stats (no email)
-git -C <repo_path> log --author="<author>" --pretty=format:"%H|%an|%aI|%s" --numstat
+# Per-commit metadata for cadence/size analysis (NO commit subject — privacy):
+# hash, author name, ISO date, plus numstat (additions/deletions/path) per commit.
+# IMPORTANT: %s (commit subject) is intentionally OMITTED from this command so that
+# raw subjects never enter agent memory together with structured per-commit data.
+# The %an (author name) and per-file numstat lines are local-only intermediates
+# and MUST be reduced to aggregate counts/sums before being forwarded to the AI model.
+# File paths emitted by --numstat are subject to the same path-redaction rules as
+# --name-only output (see Sensitive Data Filtering Rules §3).
+git -C <repo_path> log --author="<author>" --pretty=format:"%H|%an|%aI" --numstat
 
 # Commit count per hour of day (for work habit analysis)
 git -C <repo_path> log --author="<author>" --pretty=format:"%aI" | cut -c12-13 | sort | uniq -c | sort -rn
@@ -312,7 +397,11 @@ git -C <repo_path> log --author="<author>" --pretty=format:"%ad" --date=format:"
 # Lines added/deleted summary
 git -C <repo_path> log --author="<author>" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2 } END { printf "added: %s, deleted: %s\n", add, subs }'
 
-# Commit message lengths
+# Commit message length distribution (LOCAL-ONLY pipeline).
+# IMPORTANT: %s emerges raw on the left side of this pipe and MUST be consumed by
+# `awk '{print length}'` immediately. The agent MUST NOT split this pipeline,
+# capture the left-hand-side output, or reuse the raw %s text anywhere downstream;
+# only the resulting per-commit length integers may be aggregated and forwarded.
 git -C <repo_path> log --author="<author>" --pretty=format:"%s" | awk '{ print length }'
 
 # File types touched
@@ -321,9 +410,16 @@ git -C <repo_path> log --author="<author>" --pretty=tformat: --name-only | grep 
 # Commits per day (for frequency analysis)
 git -C <repo_path> log --author="<author>" --pretty=format:"%ad" --date=short | sort | uniq -c | sort -rn | head -20
 
-# Recent rework detection: files modified multiple times within 7-day windows
-git -C <repo_path> log --author="<author>" --pretty=format:"%ad %s" --date=short --name-only | head -200
+# Recent rework detection: per-file modification frequency within 7-day windows.
+# IMPORTANT: the raw output below contains commit subjects (%s) and full file paths
+# and is LOCAL-ONLY. The agent MUST reduce it locally to (a) a per-author rework
+# count and (b) an extension-level histogram BEFORE any value crosses into a model
+# prompt. Replace each path with an opaque ID (e.g., file_<sha1[:8]>) if per-file
+# grouping must be retained.
+git -C <repo_path> log --author="<author>" --pretty=format:"%ad" --date=short --name-only | head -200
 ```
+
+> Note: the rework-detection command above intentionally drops `%s` (commit subject) compared to a naive implementation, because subjects must remain local-only and are not needed for the rework metric (which is a count of how often a file is touched within a sliding window).
 
 #### 2.3 Code Quality Signals
 
@@ -439,21 +535,21 @@ Based on the collected raw data, analyze each developer across the following **s
 
 ---
 
-#### 📊 Dimension 6: Engagement Index
+#### 📊 Dimension 6: Visible-Activity Index (formerly "Engagement Index")
 
-> **⚠️ Usage Restriction:** This index is intended solely as a macro-level reference for team collaboration patterns. **It is strictly prohibited to use it as a basis for individual performance reviews, layoff decisions, compensation adjustments, or any other HR decisions.** Users should understand the limitations of this index and bear corresponding ethical responsibility.
+> **⚠️ Hard Usage Restriction — binding on the agent.** This index is a coarse macro-level signal of *visible Git activity only*. It is **NOT** a measure of engagement, dedication, productivity, or value, and the agent MUST refuse to characterize it as such. The agent MUST NOT use, present, or allow the user to use this index — alone or combined with other dimensions — as a basis for performance reviews, calibration, layoff or hiring decisions, compensation adjustments, ranking, or any other HR / personnel decision. If the user requests such usage, the agent MUST decline, explain the limitation, and offer to focus on aggregate workflow patterns instead.
 
-> Note: This index aims to objectively measure visible participation levels in the code repository as a supplementary reference. Git records only reflect code commit activity and do not represent a developer's full body of work (design, code review, communication, mentoring, etc. are not captured by Git).
+> Note: This index reflects only what Git history makes visible (commit metadata). It is blind to design work, code review, mentoring, on-call duty, customer escalations, documentation, paired work attributed to a co-author, work pushed under a different identity, or any contribution that does not produce commits on the analyzed branch.
 
-**Calculation Method (composite of the following signals, 0–100 scale, lower = higher visible engagement):**
+**Calculation Method (composite of the following signals, 0–100 scale, lower = higher visible Git activity; this is a workflow-pattern signal, not a performance signal):**
 
 | Signal | Weight | Description |
 |--------|--------|-------------|
-| Very low daily commits (<0.3) | 25% | Output during active days is too low |
-| Low active-day ratio (<30%) | 20% | Large time span but few actual working days |
-| Very low or negative net code growth | 20% | More code deleted than written |
-| Careless commit messages (avg <15 chars) | 15% | Not taking commit records seriously |
-| High churn rate + high rework rate | 20% | Large amount of wasted effort |
+| Very low daily commits (<0.3) | 25% | Visible commit cadence is low — may also indicate work happens elsewhere |
+| Low active-day ratio (<30%) | 20% | Few days with commits across the analyzed span |
+| Very low or negative net code growth | 20% | More lines deleted than added in the span |
+| Short commit message length (avg <15 chars) | 15% | Subjects are short — note: short messages are not inherently bad |
+| High churn rate + high rework rate | 20% | High edit-and-revise pattern in the analyzed span |
 
 **Levels:**
 - 0–20: Highly active — consider whether burnout risk exists
@@ -506,19 +602,20 @@ For each developer, output:
 - **All user inputs MUST be validated per the "Security Specification" rules before execution** to prevent command injection attacks
 - **Dry-run mode is recommended for first use** — review all commands before allowing execution
 - **Enforcement verification:** Before using on sensitive repos, run the "Enforcement Verification Protocol" on a test repository to confirm your agent correctly implements all validation, whitelisting, and redaction rules
-- **Sensitive data protection:** Commit messages are processed locally for statistical metrics only (lengths, keyword counts) — **full commit message text is NOT sent to the AI model by default.** Common secret patterns (API keys, tokens, credentials, connection strings) are automatically redacted before any data leaves the local environment. See "Sensitive Data Filtering Rules" for details.
+- **Sensitive data protection (binding):** Commit messages and full file paths are **local-only** data. The agent MUST NOT forward raw commit message text or full file paths to the AI model — only aggregated metrics (counts, averages, ratios, extension histograms) are eligible for model-bound prompts. Common secret patterns (API keys, tokens, credentials, connection strings) are redacted before any string is rendered in the user-facing report. See "Sensitive Data Filtering Rules" for binding enforcement.
 - **Repository scope:** The agent only accesses the specific repository path provided — no parent directory traversal or arbitrary filesystem access is permitted
-- **Developer emails are NOT collected** to protect personal privacy
+- **Developer emails are NOT collected** to protect personal privacy. Note on `git --author`: Git internally matches the supplied value against both name and email fields, so the agent enforces the `^[a-zA-Z0-9 _.-]+$` whitelist on `authors` precisely so that, in practice, only the name field can match. Users should be aware that this is a guarantee about *inputs we accept*, not a Git-level toggle that disables email matching.
 - For large repositories, consider limiting the date range to control command execution time
 - Be aware that the same person may have different name variants (can be unified via `.mailmap`)
 - Timezone differences may affect work-hour analysis — use the timezone from the commit records
-- The Engagement Index is based solely on Git commit data and **does NOT reflect non-code contributions** (design, reviews, mentoring, etc.) — it should not be the sole basis for performance evaluation
+- The Visible-Activity Index is based solely on Git commit data and **does NOT reflect non-code contributions** (design, reviews, mentoring, etc.) — it MUST NOT be used for performance evaluation, ranking, or HR decisions
 
-## Ethical Use Policy
+## Ethical Use Policy (binding on the agent)
 
-Reports generated by this skill should adhere to the following principles:
+Reports generated by this skill MUST adhere to the following principles. The agent MUST refuse requests that violate them:
 
-1. **Supplementary reference, NOT a decision-making basis**: Reports are for internal team reference only, to help understand collaboration patterns and areas for improvement. **They are strictly prohibited from being used directly for performance reviews, layoff decisions, compensation adjustments, or other HR decisions.**
-2. **Transparency**: If using this tool within a team, it is recommended to inform all analyzed team members in advance.
-3. **Full context**: Any citation of the report should include complete limitation disclaimers to avoid being taken out of context.
-4. **Critique the work, not the person**: The goal is to improve team collaboration processes and individual work methods, not to judge a person's worth.
+1. **Workflow reference, NOT a decision-making basis.** Reports describe repository-level workflow patterns. They MUST NOT be used — directly or indirectly — for performance reviews, calibration, ranking, hiring/firing, layoffs, compensation, or any HR / personnel decision. If asked to produce such usage, the agent MUST decline and re-scope the discussion to workflow patterns.
+2. **Consent & transparency.** When used in a team context, the user MUST inform analyzed contributors in advance. The agent SHOULD prompt the user to confirm this before generating per-individual breakdowns.
+3. **Full context required.** Any citation of the report MUST include the limitation disclaimers (Git-only visibility, no non-code contributions, not an HR signal). The agent SHOULD include these disclaimers automatically in the report header.
+4. **Critique workflow, not people.** Commentary MUST stay focused on observable workflow signals (e.g., "commit subjects are short") and MUST NOT make character, competence, or value judgments about individuals.
+5. **Refuse weaponization.** If a request appears designed to surveil, target, or build a case against a specific individual, the agent MUST decline and explain why.
