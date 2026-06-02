@@ -1,5 +1,5 @@
 name: who-is-actor
-version: 1.0.13
+version: 1.0.14
 description: >
   A zero-*install*-dependency Git repository COLLABORATION-PATTERN analysis
   skill. It produces an aggregate, repository-level report describing commit
@@ -14,11 +14,13 @@ description: >
   authority to analyze it, and (recommended) opt into Dry-Run preview
   before any git command runs.
 
-  HR / personnel-decision use is OUT OF SCOPE and the agent MUST refuse:
-  the report, including the Visible-Activity Index (formerly "Engagement
-  Index") and any individual breakdown, must NOT be used for performance
-  reviews, hiring/firing, layoffs, compensation, ranking, or any other
-  personnel-style judgment of individuals.
+  HR / personnel-decision use is OUT OF SCOPE and the agent MUST refuse.
+  The report is repository-level only and contains NO per-contributor
+  breakdown table, NO per-contributor metrics, NO per-contributor activity
+  scores or bands, NO rankings, and NO individualized commentary. It MUST
+  NOT be used for performance reviews, hiring/firing, layoffs,
+  compensation, ranking, or any other personnel-style judgment of
+  individuals.
 
   "Zero dependency" means no Python/Node packages, no pip/npm installs, and
   no custom scripts — however the skill DOES require standard system
@@ -95,12 +97,6 @@ parameters:
       Absolute path to the Git repository to analyze.
     required: true
 
-  - name: authors
-    type: list
-    description: >
-      List of author display names to analyze (email addresses are NOT accepted — use the author's Git display name instead). If empty, analyze all contributors.
-    default: []
-
   - name: since
     type: string
     description: >
@@ -123,13 +119,23 @@ outputs:
   - name: report
     type: string
     description: >
-      A repository-level Markdown report describing aggregate collaboration
-      patterns: commit cadence, churn, rework signals, conventional-commit
-      compliance, file-extension activity histograms, and bus-factor risk.
-      Contributor display names appear ONLY as opaque attribution labels for
-      Git commit metadata; the report MUST NOT include per-individual scores,
-      rankings, "best/worst" callouts, individualized performance commentary,
-      composite personal grades, or any other person-level evaluative output.
-      It is not a developer profile, report card, or HR/personnel artifact and
-      MUST NOT be used for performance reviews, ranking, hiring/firing,
+      A strictly REPOSITORY-LEVEL Markdown report describing aggregate
+      collaboration patterns of the analyzed repository as a whole:
+      repository-wide commit-cadence histograms (hour-of-day, day-of-week,
+      active-day ratio), aggregate churn and rework signals, repository-wide
+      conventional-commit compliance rate, file-extension activity
+      histograms, and FILE/MODULE-level bus-factor risk alerts.
+
+      The report MUST NOT contain any per-contributor breakdown table, any
+      per-contributor metrics row, any per-contributor activity score or
+      band, any contributor ranking, any "best/worst" callouts, any
+      individualized commentary, any composite personal grade, any radar
+      chart, any one-line summary about a named individual, or any other
+      person-level output. Contributor display names appear in the report
+      only when strictly necessary for file-level bus-factor disclosure
+      (e.g., "file X has only one historical author") and never alongside
+      evaluative metrics.
+
+      It is not a developer profile, report card, or HR/personnel artifact
+      and MUST NOT be used for performance reviews, ranking, hiring/firing,
       layoffs, compensation, or any other personnel decision.

@@ -9,7 +9,7 @@ set -euo pipefail
 # Configuration
 # ------------------------------------------------------------
 SLUG="who-is-actor"
-DEFAULT_VERSION="v1.0.13"
+DEFAULT_VERSION="v1.0.14"
 SKILL_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERSION="${1:-$DEFAULT_VERSION}"
 
