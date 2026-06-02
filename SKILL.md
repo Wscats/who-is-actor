@@ -31,9 +31,9 @@ description: >
 
   Activation phrases (must include an explicit analyze-this-repo intent
   AND a repository path or unambiguous repo reference): "analyze the git
-  repository at <path>", "run who-is-actor on <path>", "profile developers
-  in this repo at <path>", "generate a developer report card for the repo
-  at <path>", "分析仓库 <path>", "对 <path> 这个 git 仓库做开发者画像".
+  repository at <path>", "run who-is-actor on <path>", "generate a
+  repository-level collaboration-pattern report for <path>", "分析仓库
+  <path>", "对 <path> 这个 git 仓库生成仓库级协作模式报告".
 
   Privacy & data-handling: relies purely on native git read-only CLI
   commands and standard Unix text-processing utilities. Developer emails
@@ -48,7 +48,7 @@ description: >
   enforcement details.
 ---
 
-# Who Is Actor — Git Repository Developer Profiling Skill
+# Who Is Actor — Git Repository Collaboration-Pattern Analysis Skill
 
 > 🔗 **Project Repository:** [https://github.com/wscats/who-is-actor](https://github.com/wscats/who-is-actor)
 
@@ -83,71 +83,64 @@ You don't need to memorize any commands or parameters — simply describe what y
 
 ```
 💬 "Analyze the repository at /path/to/my-project"
-💬 "Profile all developers in this repo"
-💬 "Who are the most active contributors in /path/to/my-project?"
-💬 "Compare commit habits of Alice and Bob"
-💬 "Show me the code quality report for this project since 2024-01-01"
-💬 "What does each developer's work pattern look like on branch main?"
-💬 "Give me an honest review of every contributor's strengths and weaknesses"
+💬 "Generate a repository-level collaboration-pattern report for /path/to/my-project"
+💬 "Show aggregate commit-cadence and churn signals for /path/to/my-project since 2024-01-01"
+💬 "What does the commit-time distribution look like on branch main in /path/to/my-project?"
 💬 "Is there a bus-factor risk in /path/to/my-project?"
+
+> The agent MUST refuse phrasings that ask for individualized judgments, comparisons between named people, "best/worst contributor" rankings, performance verdicts, or personnel-style assessments — even if a repository path is provided. In such cases the agent MUST decline and offer instead to describe repository-level workflow patterns.
 ```
 
 ### 中文
 
 ```
-💬 "分析一下 /path/to/my-project 这个仓库"
-💬 "帮我看看这个项目里每个开发者的提交习惯"
-💬 "对比一下 Alice 和 Bob 的研发效率"
-💬 "生成这个仓库的开发者画像报告"
-💬 "这个项目的代码质量怎么样？"
-💬 "从 2024 年 1 月开始，分析 main 分支的提交记录"
-💬 "团队里谁的代码风格最好？谁需要改进？"
+💬 "分析一下 /path/to/my-project 这个仓库的协作模式"
+💬 "生成 /path/to/my-project 的仓库级提交节奏与流失率报告"
+💬 "从 2024 年 1 月开始，分析 main 分支的提交节奏分布"
 💬 "看看这个仓库有没有巴士因子风险"
+💬 "统计 /path/to/my-project 中提交消息的约定式合规率"
+
+> 代理必须拒绝任何要求对具名个人作出评判、对比、排名、"谁最好/最差"或任何人事性评估的措辞——即便仓库路径已经提供。这种情况下，代理应说明本技能不做个人评估，并改为提供仓库级别的工作流程模式描述。
 ```
 
 ### 日本語
 
 ```
-💬 "このリポジトリの開発者を分析してください /path/to/my-project"
-💬 "各開発者のコミット習慣を比較してください"
-💬 "このプロジェクトのコード品質レポートを作成してください"
-💬 "チームの開発効率を評価してください"
+💬 "このリポジトリの協作パターンを分析してください /path/to/my-project"
+💬 "このリポジトリのコミット時間分布とチャーン率レポートを作成してください"
+💬 "このリポジトリの bus-factor リスクを確認してください"
 ```
 
 ### 한국어
 
 ```
-💬 "이 저장소의 개발자 프로필을 분석해 주세요 /path/to/my-project"
-💬 "각 개발자의 커밋 습관을 비교해 주세요"
-💬 "이 프로젝트의 코드 품질 보고서를 만들어 주세요"
-💬 "팀의 개발 효율성을 평가해 주세요"
+💬 "이 저장소의 협업 패턴을 분석해 주세요 /path/to/my-project"
+💬 "이 저장소의 커밋 케이던스와 churn 지표 보고서를 만들어 주세요"
+💬 "이 저장소의 bus-factor 리스크를 확인해 주세요"
 ```
 
 ### Español
 
 ```
-💬 "Analiza el repositorio en /path/to/my-project"
-💬 "Compara los hábitos de commit de todos los desarrolladores"
-💬 "Dame un informe de calidad del código de este proyecto"
-💬 "¿Quién es el desarrollador más activo del equipo?"
+💬 "Analiza los patrones de colaboración del repositorio en /path/to/my-project"
+💬 "Genera un informe a nivel de repositorio sobre cadencia de commits y churn"
+💬 "¿Existe riesgo de bus-factor en /path/to/my-project?"
 ```
 
 ### Français
 
 ```
-💬 "Analyse le dépôt situé à /path/to/my-project"
-💬 "Compare les habitudes de commit de chaque développeur"
-💬 "Génère un rapport de qualité du code pour ce projet"
-💬 "Qui est le contributeur le plus actif de l'équipe ?"
+💬 "Analyse les motifs de collaboration du dépôt à /path/to/my-project"
+💬 "Génère un rapport au niveau du dépôt sur la cadence des commits et le churn"
+💬 "Y a-t-il un risque de bus-factor dans /path/to/my-project ?"
 ```
 
 ### Deutsch
 
 ```
-💬 "Analysiere das Repository unter /path/to/my-project"
-💬 "Vergleiche die Commit-Gewohnheiten aller Entwickler"
-💬 "Erstelle einen Code-Qualitätsbericht für dieses Projekt"
-💬 "Wer ist der aktivste Entwickler im Team?"
+💬 "Analysiere die Kollaborationsmuster des Repositories unter /path/to/my-project"
+💬 "Erstelle einen Repository-Level-Bericht zu Commit-Kadenz und Churn"
+💬 "Gibt es ein Bus-Factor-Risiko in /path/to/my-project?"
 ```
 
 ---
@@ -162,7 +155,7 @@ You don't need to memorize any commands or parameters — simply describe what y
 | `until` | End date in ISO format (`YYYY-MM-DD`) | No | Full history |
 | `branch` | Target branch to analyze | No | Active branch |
 
-**What you get:** A structured Markdown report with a summary table, per-developer profiles (six-dimension radar scores, strengths/weaknesses, improvement suggestions), team comparison, and bus-factor risk alerts.
+**What you get:** A structured, repository-level Markdown report describing aggregate collaboration patterns: a contributor-attributed metrics table (commit cadence, churn, rework signals, weekend/late-night ratios, conventional-commit compliance, file-extension activity histograms), workflow-pattern observations, and bus-factor risk alerts. Contributor display names appear strictly as opaque attribution labels for Git metadata; the report does NOT include per-individual scores, rankings, "best/worst" callouts, composite personal grades, individualized performance commentary, or any other person-level evaluative output.
 
 ---
 
@@ -450,88 +443,71 @@ git -C <repo_path> log --pretty=format:"%an" --name-only | sort | uniq -c | sort
 git -C <repo_path> log --author="<author>" --pretty=format:"%ad" --date=short | sort | sed -n '1p;$p'
 ```
 
-### Step 3: AI Analysis & Evaluation
+### Step 3: Repository-Level Pattern Description (No Individual Scoring)
 
-Based on the collected raw data, analyze each developer across the following **six dimensions**, assigning a score of 1–10 for each:
+Based on the collected aggregate metrics, the agent MUST describe the **repository-level workflow patterns** observed across the following **six aggregate dimensions**. The agent MUST NOT assign 1–10 scores, letter grades, ranks, composite personal scores, or "best/worst" labels to individual contributors. Each dimension is reported as a description of what the repository's commit history shows, with contributor display names appearing only as opaque attribution labels for the underlying metrics.
+
+> **Hard rule (binding on the agent):** Per-individual numeric scoring, ranking, comparative "who is better" framing, performance verdicts, character/competence judgments, and "improvement suggestions targeted at named individuals" are OUT OF SCOPE and MUST be refused. Suggestions, when they appear, MUST be framed as repository-level or workflow-level discussion starters (e.g., "the repository shows a high weekend-commit ratio — worth a team-process conversation"), never as personal action items for a named person.
 
 ---
 
-#### 📝 Dimension 1: Commit Habits
+#### 📝 Dimension 1: Commit Habits (repository-level)
 
-**Analysis Factors:**
-- Total commit count, average daily commit frequency
+**Aggregate signals to describe (no per-person grading):**
+- Total commit count and average daily commit frequency, attributed to commit metadata
 - Average lines changed per commit (additions + deletions)
-- Average commit message length and quality
-- Merge commit ratio
+- Average commit-message length and conventional-commit compliance rate
+- Merge-commit ratio
 - Frequency of large commits (>500 lines)
 
-**Scoring Criteria:**
-- 10: 2–5 daily commits, 50–200 lines each, clear and well-formatted messages
-- 5: Inconsistent frequency, occasional giant commits, mixed message quality
-- 1: Very few commits or frequent giant commits with one-word messages
+Report these as observed repository patterns (e.g., "commits attributed to <name> show short average message length"). Do NOT translate them into a 1–10 score for the person.
 
 ---
 
-#### ⏰ Dimension 2: Work Habits
+#### ⏰ Dimension 2: Time-of-Day Distribution (repository-level)
 
-**Analysis Factors:**
-- Commit time distribution (peak hours)
+**Aggregate signals to describe:**
+- Hour-of-day commit histogram (peak hours)
 - Weekend commit percentage
-- Late-night coding ratio (22:00–04:59)
-- Longest consecutive coding streak (days)
+- Late-night commit ratio (22:00–04:59)
+- Longest consecutive day-streak with commits
 - Active days / total span days
 
-**Scoring Criteria:**
-- 10: Regular working hours, late-night/weekend ratio <10%, consistent and steady output
-- 5: Some late-night/weekend commits, moderate rhythm fluctuations
-- 1: Almost all commits at night/weekends, or extremely irregular patterns
-
-> Note: Late-night/weekend coding is not inherently "bad," but persistent patterns may indicate process or resource issues.
+> Late-night or weekend commits are NOT inherently "bad." They may reflect daytime meetings, time-zone differences, deployment windows, on-call duty, or personal scheduling. Patterns are discussion starters about team workflow, not verdicts about individuals.
 
 ---
 
-#### 🚀 Dimension 3: Development Efficiency
+#### 🚀 Dimension 3: Churn & Rework Signals (repository-level)
 
-**Analysis Factors:**
-- Net code growth rate: (additions - deletions) / additions
+**Aggregate signals to describe:**
+- Net code growth rate: (additions − deletions) / additions
 - Code churn rate: deletions / additions
-- Rework ratio: frequency of modifying the same file within 7-day windows
-- Average daily output during active days
+- Rework ratio: how often the same file is modified within a 7-day window
+- Daily output average during active days
 
-**Scoring Criteria:**
-- 10: High net growth rate, churn rate <20%, low rework ratio, stable output
-- 5: Moderate churn rate, some rework
-- 1: Massive code deletions, frequent rework, highly volatile output
+A high churn or rework rate is a *workflow signal* — it may indicate evolving requirements, an ongoing refactor, or exploratory work. It is not evidence about a person's competence.
 
 ---
 
-#### 🎨 Dimension 4: Code Style
+#### 🎨 Dimension 4: Commit-Message Conventions (repository-level)
 
-**Analysis Factors:**
-- Primary programming languages / file type distribution
+**Aggregate signals to describe:**
+- File-extension distribution
 - Conventional Commits compliance rate
-- Whether commit messages reference issue numbers
-- File modification focus (concentrated on a few modules vs. scattered)
-
-**Scoring Criteria:**
-- 10: >80% Conventional Commits compliance, messages reference issues, focused modifications
-- 5: Partial compliance, occasionally scattered
-- 1: Almost no compliance, meaningless messages
+- Whether commit messages reference issue/ticket IDs (presence ratio only — raw IDs remain local-only)
+- Whether modifications cluster on a few file extensions vs. are spread out
 
 ---
 
-#### 🔍 Dimension 5: Code Quality
+#### 🔍 Dimension 5: Quality-Related Signals (repository-level)
 
-**Analysis Factors:**
-- Bug fix commit ratio
+**Aggregate signals to describe:**
+- Bug-fix commit ratio (based on message keyword matching)
 - Revert commit frequency
-- Large commit (>500 lines) ratio
-- Frequency of test-related file modifications
+- Large-commit (>500 lines) ratio
+- Whether test-related file extensions appear in the activity histogram
 
-**Scoring Criteria:**
-- 10: Bug fix ratio <10%, no reverts, large commits <5%, test files modified
-- 5: Bug fix 15–25%, few reverts, some large commits
-- 1: Bug fix >30%, frequent reverts, many giant commits
+A high bug-fix ratio may simply mean the contributor's role is maintenance, or that the repository was in a stabilization phase. Do NOT use this as a quality verdict about a person.
 
 ---
 
@@ -551,49 +527,56 @@ Based on the collected raw data, analyze each developer across the following **s
 | Short commit message length (avg <15 chars) | 15% | Subjects are short — note: short messages are not inherently bad |
 | High churn rate + high rework rate | 20% | High edit-and-revise pattern in the analyzed span |
 
-**Levels:**
-- 0–20: Highly active — consider whether burnout risk exists
-- 21–40: Steady participation, consistent output
-- 41–60: Moderate participation, room for improvement
-- 61–80: Low participation — check if there are non-code contributions not captured
-- 81–100: Very low participation — recommend discussing with the individual to understand the full picture
+**Bands (descriptive only, NOT a verdict on individuals):**
+- 0–20: High visible Git activity in the analyzed window — note that high commit volume is NOT a productivity verdict and may correlate with sustainability concerns at the team-process level
+- 21–40: Steady visible Git activity
+- 41–60: Moderate visible Git activity — discussion starting point only, insufficient to draw conclusions
+- 61–80: Low visible Git activity — may indicate non-code contributions (design, review, mentoring, on-call, docs) that Git cannot see
+- 81–100: Very low visible Git activity — many possible explanations (different role, time off, work attributed under another identity, work on other branches/repos); the agent MUST NOT recommend confronting, reviewing, or otherwise singling out the individual based on this signal
+
+> **Binding restriction on the agent:** These bands describe what is *visible in Git*, not the person. The agent MUST NOT translate a band into an evaluative label about the contributor (e.g., "slacking", "underperforming"), MUST NOT recommend HR-style conversations or interventions targeting a named person, and MUST NOT use the band as input to any ranking, calibration, or comparative judgment.
 
 > **Important:** This index is calculated solely from Git commit records and cannot reflect code reviews, architecture design, technical discussions, team mentoring, or other work that doesn't produce commits. A high score does NOT equal "slacking," and a low score does NOT equal "efficient." Please make judgments only after understanding the full context.
 
-### Step 4: Generate Report
+### Step 4: Generate Report (Repository-Level, Non-Evaluative)
 
-The final report MUST include the following structure:
+The final report MUST be repository-scoped and non-evaluative. It MUST include a header with the limitation disclaimers (Git-only visibility, no non-code contributions, not an HR signal, not for personnel decisions). It MUST follow the structure below.
 
-#### 4.1 Summary Table
+> **Hard prohibitions (binding):** The agent MUST NOT include any of the following: per-individual 1–10 scores, radar charts of personal scores, composite/overall personal scores, rankings of contributors, "best/worst performer" callouts, sharp/memorable one-line judgments about a named person, individualized strengths/weaknesses verdicts, or improvement suggestions targeted at a named contributor. Any commentary MUST critique the workflow signals, not the person.
 
-| Developer | Commits | Lines +/- | Daily Avg | Weekend% | Late-Night% | Bug Fix% | Churn Rate | Engagement | Overall Score |
-|-----------|---------|-----------|-----------|----------|-------------|----------|------------|------------|---------------|
-| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+#### 4.1 Repository Activity Table (attribution only — not a scoreboard)
 
-#### 4.2 Individual Developer Profiles
+| Contributor (attribution) | Commits | Lines +/− | Daily Avg | Weekend% | Late-Night% | Bug-Fix% | Churn Rate | Visible-Activity Band |
+|---------------------------|---------|-----------|-----------|----------|-------------|----------|------------|-----------------------|
+| ... | ... | ... | ... | ... | ... | ... | ... | ... |
 
-For each developer, output:
+No "Overall Score" or composite personal grade column is permitted. Contributor names exist only to attribute Git metadata. The table MUST be accompanied by a note clarifying that it is descriptive, not evaluative.
 
-1. **Data Dashboard**: Key metrics for all six dimensions
-2. **AI Commentary**: Serious, direct assessment of strengths and weaknesses (no sugarcoating)
-3. **Improvement Suggestions**: Specific, actionable recommendations for each weakness
-4. **Six-Dimension Radar Score**: 1–10 per dimension
-5. **Overall Score**: Weighted average (Commit Habits 15%, Work Habits 15%, Dev Efficiency 25%, Code Style 15%, Code Quality 20%, Engagement Index inverse 10%)
-6. **One-Line Summary**: A sharp, memorable sentence summarizing this developer
+#### 4.2 Per-Attribution Pattern Notes (optional, workflow-level only)
 
-#### 4.3 Team Cross-Comparison
+For each contributor attribution, the agent MAY include a short, neutral pattern note that:
 
-- Rankings across all dimensions
-- Highlight best / worst performers
-- Overall team health assessment
-- Bus factor risk alerts
+1. Restates the aggregate metrics already in the table
+2. Describes the *visible Git pattern* (e.g., "commits attributed to this name cluster on weekends", "average commit-message length is short", "file-extension activity is concentrated on `.ts` and `.tsx`")
+3. Lists possible *workflow-level* interpretations (multiple, non-exhaustive) without asserting which is correct
+4. Avoids any personal verdict, character/competence judgment, ranking position, or sharp one-line summary about the person
+
+The agent MUST NOT generate per-individual numeric scores, letter grades, composite scores, ranking positions, or improvement suggestions phrased as personal action items.
+
+#### 4.3 Repository-Level Workflow Observations
+
+- Aggregate observations across the whole repository (e.g., share of weekend commits across the analyzed span, conventional-commit compliance rate, file hotspots by extension)
+- Bus-factor risk alerts at the *file/module* level (not at the person level)
+- Suggested *team-process* discussion starters tied to repository-wide signals
+
+The agent MUST NOT produce a "team ranking", "top/bottom contributors", or any comparable comparative judgment of named individuals.
 
 ## Commentary Style Requirements
 
-- **Serious and direct**: No sugarcoating, no hedging. Let the data speak — good is good, bad is bad.
-- **Warm but firm**: Point out problems while providing a path to improvement. Critique the work, not the person.
-- **Sharp but fair**: Like a senior Tech Lead conducting an annual Code Review — neither pulling punches nor being cruel.
-- **Data-driven**: Every conclusion MUST be backed by corresponding data. No gut feelings.
+- **Describe the repository, not the person.** Commentary MUST be about workflow signals visible in the commit history (e.g., "the repository shows a 78% weekend-commit ratio in this span"), not about the contributor's character, ability, or worth.
+- **Multiple readings, not verdicts.** When a signal is ambiguous, present several plausible workflow-level explanations rather than picking one. Avoid "sharp", "memorable", or labeling-style sentences about named individuals.
+- **No personal scoring or ranking.** Do not produce 1–10 personal scores, composite grades, "best/worst" callouts, or comparative one-liners about named contributors.
+- **Data-bounded.** Every observation MUST be backed by aggregate data already in the report. Do NOT extrapolate from incomplete Git visibility to personal traits.
 
 ## Important Notes
 

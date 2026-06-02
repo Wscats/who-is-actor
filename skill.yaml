@@ -1,5 +1,5 @@
 name: who-is-actor
-version: 1.0.12
+version: 1.0.13
 description: >
   A zero-*install*-dependency Git repository COLLABORATION-PATTERN analysis
   skill. It produces an aggregate, repository-level report describing commit
@@ -123,5 +123,13 @@ outputs:
   - name: report
     type: string
     description: >
-      The generated Markdown analysis report containing per-developer metrics,
-      cross-comparison table, ratings, and personalized commentary.
+      A repository-level Markdown report describing aggregate collaboration
+      patterns: commit cadence, churn, rework signals, conventional-commit
+      compliance, file-extension activity histograms, and bus-factor risk.
+      Contributor display names appear ONLY as opaque attribution labels for
+      Git commit metadata; the report MUST NOT include per-individual scores,
+      rankings, "best/worst" callouts, individualized performance commentary,
+      composite personal grades, or any other person-level evaluative output.
+      It is not a developer profile, report card, or HR/personnel artifact and
+      MUST NOT be used for performance reviews, ranking, hiring/firing,
+      layoffs, compensation, or any other personnel decision.
